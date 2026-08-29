@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     imageContainer: {
         position: 'relative',
         width: '100%',
-        height: 120,
+        height: 300,
         borderRadius: 10,
         overflow: 'hidden',
         backgroundColor: '#f0f2f5',

@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     grid: {
+        height:'96vh',
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
