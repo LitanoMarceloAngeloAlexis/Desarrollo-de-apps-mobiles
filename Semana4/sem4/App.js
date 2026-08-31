@@ -3,29 +3,44 @@ import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'rea
 
 export default function App() {
   const [nombre, setNombre] = useState('');
+  const [edad, setEdad] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [esError, setEsError] = useState(false);
+  const [enviando, setEnviando] = useState(false);
 
   const manejarRegistro = () => {
     if (nombre.trim() === '') {
-      setMensaje('Por favor, ingrese su nombre');
+      setMensaje('Por favor, ingrese su nombre.');
       setEsError(true);
       return;
     }
     
-    setMensaje(`Hola, ${nombre}. Registro correcto.`);
+    if (edad.trim() === '') {
+      setMensaje('Por favor, ingrese su edad.');
+      setEsError(true);
+      return;
+    }
+
+    if (isNaN(edad) || Number(edad) <= 0) {
+      setMensaje('La edad debe ser un número válido mayor a 0.');
+      setEsError(true);
+      return;
+    }
+    
+    setMensaje(`¡Hola, ${nombre}! Tienes ${edad} años. Registro correcto`);
     setEsError(false);
   };
 
   const limpiarFormulario = () => {
     setNombre('');
+    setEdad('');
     setMensaje('');
     setEsError(false);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Registro Básico</Text>
+      <Text style={styles.titulo}>Registro Avanzado</Text>
       
       <TextInput
         style={styles.input}
@@ -35,8 +50,23 @@ export default function App() {
         onChangeText={setNombre}
       />
 
-      <View style={styles.contenedorBoton}>
-        <Button title="Enviar" onPress={manejarRegistro} color="#007AFF" />
+      <TextInput
+        style={styles.input}
+        placeholder="Ingrese su edad"
+        placeholderTextColor="#888"
+        keyboardType="numeric"
+        value={edad}
+        onChangeText={setEdad}
+      />
+
+      <View style={[styles.contenedorBoton, enviando && styles.botonPresionado]}>
+        <Button 
+          title="Registrarse" 
+          onPress={manejarRegistro} 
+          onPressIn={() => setEnviando(true)}   
+          onPressOut={() => setEnviando(false)}  
+          color={enviando ? '#FF5733' : '#007AFF'} 
+        />
       </View>
 
       {mensaje !== '' && (
@@ -80,9 +110,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
   },
+  botonPresionado: {
+    opacity: 0.8,
+  },
   resultado: {
     marginTop: 15,
-    fontSize: 16,
+    fontSize: 15,
     textAlign: 'center',
     fontWeight: '500',
   },
@@ -96,7 +129,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#bbe3ff',
     padding: 12,
     borderRadius: 8,
-    marginTop: 15,
+    marginTop: 10,
     alignItems: 'center',
   },
   textoBotonSecundario: {
