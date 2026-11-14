@@ -49,7 +49,6 @@ export default function HomeScreen() {
     });
 
     return () => {
-      // 3. SOLUCIÓN 2: Usar .remove() directamente en lugar de removeNotificationSubscription
       if (notificationListener.current) {
         notificationListener.current.remove();
       }
@@ -116,18 +115,24 @@ export default function HomeScreen() {
     }
 
     try {
-      const triggerId = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Recordatorio ⏰',
-          body: title,
-          sound: true,
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-          seconds: secNum,
-          repeats: false,
-        },
-      });
+      let triggerId = 'web-mock-id-' + Date.now();
+
+      if (Platform.OS !== 'web') {
+        triggerId = await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Recordatorio',
+            body: title,
+            sound: true,
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+            seconds: secNum,
+            repeats: false,
+          },
+        });
+      } else {
+        console.warn('Las notificaciones nativas no se pueden probar en la Web. Solo se guardará en la lista.');
+      }
 
       const newReminder = {
         id: triggerId,
@@ -142,7 +147,12 @@ export default function HomeScreen() {
 
       setTitle('');
       setSeconds('');
-      Alert.alert('Éxito', `Recordatorio programado para dentro de ${secNum} segundos.`);
+      
+      if (Platform.OS === 'web') {
+        Alert.alert('Aviso Web', 'Recordatorio guardado en la lista (Las notificaciones push solo funcionan en Android/iOS).');
+      } else {
+        Alert.alert('Éxito', `Recordatorio programado para dentro de ${secNum} segundos.`);
+      }
     } catch (error) {
       console.error('Error al programar notificación:', error);
       Alert.alert('Error', 'No se pudo programar la notificación.');
@@ -167,7 +177,7 @@ export default function HomeScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
         style={styles.innerContainer}
       >
-        <Text style={styles.headerTitle}>Mis Recordatorios 🔔</Text>
+        <Text style={styles.headerTitle}>Mis Recordatorios</Text>
 
         <View style={styles.formCard}>
           <TextInput
